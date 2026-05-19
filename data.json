@@ -1,0 +1,54 @@
+{
+  "todayBrief": [
+    {
+      "emoji": "✅",
+      "text": "Apply to 2 cybersecurity roles"
+    },
+    {
+      "emoji": "📅",
+      "text": "Finish math homework (due tomorrow)"
+    },
+    {
+      "emoji": "📧",
+      "text": "Reply to recruiter from Google"
+    }
+  ],
+  "jobPipeline": [
+    {
+      "title": "Junior Security Analyst",
+      "company": "Google",
+      "location": "Remote",
+      "status": "applied"
+    },
+    {
+      "title": "Cybersecurity Intern",
+      "company": "Microsoft",
+      "location": "Remote",
+      "status": "interview"
+    },
+    {
+      "title": "IT Support Specialist",
+      "company": "Local Company",
+      "location": "In-person",
+      "status": "offer"
+    }
+  ],
+  "emailSummary": [
+    {
+      "emoji": "🔥",
+      "text": "2 new recruiter messages"
+    },
+    {
+      "emoji": "📅",
+      "text": "1 upcoming interview invite"
+    },
+    {
+      "emoji": "🔕",
+      "text": "7 low-priority emails filtered"
+    }
+  ],
+  "motivation": {
+    "message": "Small steps every day lead to big career changes. You're doing great, Autum.",
+    "streak": 12
+  }
+}

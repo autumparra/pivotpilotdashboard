@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pivot Pilot 🐈‍⬛</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600&display=swap');
+    
+    :root {
+      --lavender: #d8c4f0;
+      --light-blue: #b3d4ff;
+      --soft-bg: #f8f5ff;
+    }
+    
+    body {
+      font-family: 'Inter', system_ui, sans-serif;
+      background: linear-gradient(135deg, #f8f5ff 0%, #e8f0ff 100%);
+      margin: 0;
+      padding: 40px 20px;
+      color: #444;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.8rem;
+      color: #5c4b8a;
+      margin: 0;
+    }
+    
+    .header p {
+      color: #7a6aa0;
+      font-size: 1.1rem;
+      margin-top: 8px;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 8px 25px rgba(180, 160, 220, 0.15);
+      transition: transform 0.2s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+    }
+    
+    .card h2 {
+      font-size: 1.25rem;
+      margin: 0 0 16px 0;
+      color: #5c4b8a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .action-item {
+      background: #f8f5ff;
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .job-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .job-row:last-child {
+      border-bottom: none;
+    }
+    
+    .status {
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    
+    .status.applied { background: #d4e8ff; color: #3a6ea0; }
+    .status.interview { background: #e8d4ff; color: #6a4b9e; }
+    .status.offer { background: #d4ffe8; color: #2e8b57; }
+    
+    .motivation {
+      background: linear-gradient(135deg, #d8c4f0, #b3d4ff);
+      color: white;
+      border-radius: 24px;
+      padding: 28px;
+      text-align: center;
+    }
+    
+    .motivation p {
+      font-size: 1.1rem;
+      margin: 0;
+      font-weight: 500;
+    }
+    
+    .emoji {
+      font-size: 1.4rem;
+    }
+    
+    .loading {
+      text-align: center;
+      color: #888;
+      padding: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Pivot Pilot 🐈‍⬛</h1>
+      <p>Your cute little career & academic sidekick</p>
+    </div>
+
+    <div class="grid">
+      
+      <!-- Today's Brief -->
+      <div class="card">
+        <h2><span class="emoji">🔥</span> Today's Brief</h2>
+        <div id="today-brief">
+          <p class="loading">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Job Pipeline -->
+      <div class="card">
+        <h2><span class="emoji">📋</span> Job Pipeline</h2>
+        <div id="job-pipeline">
+          <p class="loading">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Email Summary -->
+      <div class="card">
+        <h2><span class="emoji">📬</span> Email Summary</h2>
+        <div id="email-summary">
+          <p class="loading">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Cute Motivational Area -->
+      <div class="card motivation" id="motivation">
+        <h2 style="color:white; justify-content:center">🌸</h2>
+        <p id="motivation-text">Loading...</p>
+        <p id="streak-text" style="margin-top:16px; font-size:0.95rem; opacity:0.9;"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    async function loadDashboard() {
+      try {
+        // Fetch from local Flask server
+        const response = await fetch('http://127.0.0.1:5000/api/data');
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        // Today's Brief
+        const briefContainer = document.getElementById('today-brief');
+        briefContainer.innerHTML = '';
+        data.todayBrief.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'action-item';
+          div.innerHTML = `
+            <span>${item.emoji}</span> 
+            <span>${item.text}</span>
+          `;
+          briefContainer.appendChild(div);
+        });
+
+        // Job Pipeline (Indeed + sample)
+        const jobContainer = document.getElementById('job-pipeline');
+        jobContainer.innerHTML = '';
+
+        // Show Indeed jobs first
+        if (data.indeedJobs && data.indeedJobs.length > 0) {
+          data.indeedJobs.forEach(job => {
+            const div = document.createElement('div');
+            div.className = 'job-row';
+            div.innerHTML = `
+              <div>
+                <strong>${job.title}</strong><br>
+                <small>${job.company}</small>
+              </div>
+              <a href="${job.link}" target="_blank" style="font-size:0.85rem; color:#5c4b8a;">View →</a>
+            `;
+            jobContainer.appendChild(div);
+          });
+        } else {
+          // fallback
+          data.jobPipeline.forEach(job => {
+            const div = document.createElement('div');
+            div.className = 'job-row';
+            div.innerHTML = `
+              <div>
+                <strong>${job.title}</strong><br>
+                <small>${job.company} • ${job.location}</small>
+              </div>
+              <span class="status ${job.status}">${job.status.charAt(0).toUpperCase() + job.status.slice(1)}</span>
+            `;
+            jobContainer.appendChild(div);
+          });
+        }
+
+        // Email Summary (real Gmail)
+        const emailContainer = document.getElementById('email-summary');
+        emailContainer.innerHTML = '';
+        
+        if (data.realEmails && data.realEmails.length > 0) {
+          data.realEmails.forEach(mail => {
+            const div = document.createElement('div');
+            div.className = 'action-item';
+            div.innerHTML = `
+              <span>📧</span> 
+              <span><strong>${mail.subject}</strong><br><small>${mail.from}</small></span>
+            `;
+            emailContainer.appendChild(div);
+          });
+        } else {
+          // fallback to sample data
+          data.emailSummary.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'action-item';
+            div.innerHTML = `
+              <span>${item.emoji}</span> 
+              <span>${item.text}</span>
+            `;
+            emailContainer.appendChild(div);
+          });
+        }
+
+        // Motivation
+        document.getElementById('motivation-text').innerHTML = `"${data.motivation.message}"`;
+        document.getElementById('streak-text').innerHTML = `Current streak: ${data.motivation.streak} days 🔥`;
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.querySelectorAll('.loading').forEach(el => {
+          el.innerHTML = '⚠️ Server not running. Start server.py first!';
+        });
+      }
+    }
+
+    // Load data when page opens
+    loadDashboard();
+  </script>
+</body>
+</html>
