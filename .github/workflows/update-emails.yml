@@ -1,0 +1,43 @@
+name: Update Email Summary
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # Runs every hour
+  workflow_dispatch:      # Allows manual trigger too
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Himalaya
+        run: |
+          curl -LO https://github.com/pimalaya/himalaya/releases/latest/download/himalaya-linux-x86_64.tar.gz
+          tar -xzf himalaya-linux-x86_64.tar.gz
+          sudo mv himalaya /usr/local/bin/
+
+      - name: Configure Himalaya
+        run: |
+          mkdir -p ~/.config/himalaya
+          cat > ~/.config/himalaya/config.toml << EOF
+          [accounts.autumparra]
+          email = "autumparra@gmail.com"
+          backend.type = "imap"
+          backend.host = "imap.gmail.com"
+          backend.port = 993
+          backend.encryption.type = "tls"
+          backend.auth.type = "password"
+          backend.auth.secret = "${{ secrets.GMAIL_APP_PASSWORD }}"
+          EOF
+
+      - name: Update emails
+        run: bash update-emails.sh
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Update email summary" || exit 0
+          git push
