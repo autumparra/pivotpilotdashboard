@@ -176,8 +176,8 @@
   <script>
     async function loadDashboard() {
       try {
-        // Fetch from local Flask server
-        const response = await fetch('http://127.0.0.1:5000/api/data');
+        // Fetch from static data.json (works on GitHub Pages)
+        const response = await fetch('data.json');
         const data = await response.json();
 
         if (data.error) {
