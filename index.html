@@ -163,6 +163,14 @@
         </div>
       </div>
 
+      <!-- Indeed Jobs -->
+      <div class="card">
+        <h2><span class="emoji">🔍</span> Indeed Jobs</h2>
+        <div id="indeed-jobs">
+          <p class="loading">Loading...</p>
+        </div>
+      </div>
+
       <!-- Cute Motivational Area -->
       <div class="card motivation" id="motivation">
         <h2 style="color:white; justify-content:center">🌸</h2>
@@ -256,6 +264,26 @@
             `;
             emailContainer.appendChild(div);
           });
+        }
+
+        // Indeed Jobs
+        const indeedContainer = document.getElementById('indeed-jobs');
+        indeedContainer.innerHTML = '';
+        if (data.indeedJobs && data.indeedJobs.length > 0) {
+          data.indeedJobs.forEach(job => {
+            const div = document.createElement('div');
+            div.className = 'job-row';
+            div.innerHTML = `
+              <div>
+                <strong>${job.title}</strong><br>
+                <small>${job.company} • ${job.location}</small>
+              </div>
+              <a href="${job.link}" target="_blank" style="font-size:0.85rem; color:#5c4b8a; text-decoration:none;">View →</a>
+            `;
+            indeedContainer.appendChild(div);
+          });
+        } else {
+          indeedContainer.innerHTML = '<p style="color:#888; font-size:0.9rem;">No Indeed jobs yet. Run fetch_indeed.py to populate.</p>';
         }
 
         // Motivation
